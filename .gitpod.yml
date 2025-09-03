@@ -1,9 +1,7 @@
-# This line tells Gitpod to use an environment with Java 17.
 image: gitpod/workspace-java-17
-
 tasks:
   - name: Setup & Run
-    # We put all commands here to run in sequence.
+    
     command: |
       # 1. Start the PostgreSQL database server.
       pg_ctl -D $PGDATA -l postgresql.log start
@@ -19,24 +17,9 @@ tasks:
       
       # 5. Finally, build and run the application.
       ./mvnw spring-boot:run
-
-# This section tells Gitpod which ports to expose.
+      # This section tells Gitpod which ports to expose.
 ports:
-  - port: 8080 # This is our Spring Boot app.
+  - port: 8080 
     onOpen: open-preview
-  - port: 5432 # This is our database.
+  - port: 5432
     onOpen: ignore
-```eof
-
-### Your Final, Final Steps
-
-1.  **Save the changes** to `.gitpod.yml`.
-2.  **Commit and push this change** from the Gitpod terminal:
-    ```bash
-    git add .gitpod.yml
-    git commit -m "fix: Adjust script timing for database startup"
-    git push origin main
-    ```
-3.  **Close the Gitpod browser tab** and launch a fresh workspace one last time using the `gitpod.io/#/` link.
-
-This time, the script will pause and give the database the head start it needs. The connection will succeed, and your application will run.
