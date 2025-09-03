@@ -1,0 +1,20 @@
+# This file tells Gitpod how to prepare and run your project automatically.
+tasks:
+  - name: Setup & Run
+    # This command block runs when the workspace starts.
+    init: |
+      # 1. Initialize and start a PostgreSQL database.
+      gp await-port 5432 && pg_ctl -D $PGDATA -l postgresql.log start
+      createdb chat_db || true # Creates the database, ignores error if it exists.
+    command: |
+      # 2. Set the database URL for the Spring Boot app.
+      export SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:5432/chat_db?user=gitpod"
+      
+      # 3. Wait for the app to be built, then run it.
+      ./mvnw clean install
+      ./mvnw spring-boot:run
+
+# This section tells Gitpod which ports from your application to expose to the internet.
+ports:
+  - port: 8080
+    onOpen: open-preview # Automatically opens a browser tab for your app's URL.
