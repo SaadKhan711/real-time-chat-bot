@@ -1,21 +1,42 @@
+# This line tells Gitpod to use an environment with Java 17.
 image: gitpod/workspace-java-17
-# This file tells Gitpod how to prepare and run your project automatically.
+
 tasks:
   - name: Setup & Run
-    # This command block runs when the workspace starts.
-    init: |
-      # 1. Initialize and start a PostgreSQL database.
-      gp await-port 5432 && pg_ctl -D $PGDATA -l postgresql.log start
-      createdb chat_db || true # Creates the database, ignores error if it exists.
+    # We put all commands here to run in sequence.
     command: |
-      # 2. Set the database URL for the Spring Boot app.
+      # 1. Start the PostgreSQL database server.
+      pg_ctl -D $PGDATA -l postgresql.log start
+      
+      # 2. IMPORTANT: Wait for 5 seconds to give the database time to initialize.
+      sleep 5
+      
+      # 3. Create our database (the '|| true' ignores errors if it already exists).
+      createdb chat_db || true
+      
+      # 4. Set the database URL for our Spring Boot application.
       export SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:5432/chat_db?user=gitpod"
       
-      # 3. Wait for the app to be built, then run it.
-      ./mvnw clean install
+      # 5. Finally, build and run the application.
       ./mvnw spring-boot:run
 
-# This section tells Gitpod which ports from your application to expose to the internet.
+# This section tells Gitpod which ports to expose.
 ports:
-  - port: 8080
-    onOpen: open-preview # Automatically opens a browser tab for your app's URL.
+  - port: 8080 # This is our Spring Boot app.
+    onOpen: open-preview
+  - port: 5432 # This is our database.
+    onOpen: ignore
+```eof
+
+### Your Final, Final Steps
+
+1.  **Save the changes** to `.gitpod.yml`.
+2.  **Commit and push this change** from the Gitpod terminal:
+    ```bash
+    git add .gitpod.yml
+    git commit -m "fix: Adjust script timing for database startup"
+    git push origin main
+    ```
+3.  **Close the Gitpod browser tab** and launch a fresh workspace one last time using the `gitpod.io/#/` link.
+
+This time, the script will pause and give the database the head start it needs. The connection will succeed, and your application will run.
